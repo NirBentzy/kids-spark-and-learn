@@ -19,7 +19,15 @@ const vocabularyItems = [
 
 const EnglishVocabularyGame = () => {
   const navigate = useNavigate();
-  const { gameState, incrementScore, decrementHearts, resetGame } = useGameContext();
+  const { 
+    gameState, 
+    incrementScore, 
+    decrementHearts, 
+    resetGame,
+    setCurrentQuestion,
+    setTimeLeft,
+    setGameOver
+  } = useGameContext();
   const [userAnswer, setUserAnswer] = useState("");
 
   // Generate a vocabulary question
@@ -49,14 +57,14 @@ const EnglishVocabularyGame = () => {
     
     // Reset and generate new question
     setUserAnswer("");
-    gameState.setTimeLeft(20);
-    gameState.setCurrentQuestion(generateVocabularyQuestion());
+    setTimeLeft(20);
+    setCurrentQuestion(generateVocabularyQuestion());
   };
 
   // Initialize the game
   useEffect(() => {
     resetGame();
-    gameState.setCurrentQuestion(generateVocabularyQuestion());
+    setCurrentQuestion(generateVocabularyQuestion());
   }, []);
 
   if (gameState.gameOver) {
@@ -116,7 +124,7 @@ const EnglishVocabularyGame = () => {
                 timeLeft={gameState.timeLeft}
                 maxTime={20}
                 isRunning={!gameState.gameOver}
-                onTimeUp={() => gameState.setGameOver(true)}
+                onTimeUp={() => setGameOver(true)}
               />
             )}
           </div>

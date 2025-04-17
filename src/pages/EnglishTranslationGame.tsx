@@ -25,7 +25,15 @@ const translationItems = [
 
 const EnglishTranslationGame = () => {
   const navigate = useNavigate();
-  const { gameState, incrementScore, decrementHearts, resetGame } = useGameContext();
+  const { 
+    gameState, 
+    incrementScore, 
+    decrementHearts, 
+    resetGame, 
+    setCurrentQuestion,
+    setTimeLeft,
+    setGameOver
+  } = useGameContext();
   const [userAnswer, setUserAnswer] = useState("");
 
   // Generate a translation question
@@ -55,14 +63,14 @@ const EnglishTranslationGame = () => {
     
     // Reset and generate new question
     setUserAnswer("");
-    gameState.setTimeLeft(20);
-    gameState.setCurrentQuestion(generateTranslationQuestion());
+    setTimeLeft(20);
+    setCurrentQuestion(generateTranslationQuestion());
   };
 
   // Initialize the game
   useEffect(() => {
     resetGame();
-    gameState.setCurrentQuestion(generateTranslationQuestion());
+    setCurrentQuestion(generateTranslationQuestion());
   }, []);
 
   if (gameState.gameOver) {
@@ -122,7 +130,7 @@ const EnglishTranslationGame = () => {
                 timeLeft={gameState.timeLeft}
                 maxTime={20}
                 isRunning={!gameState.gameOver}
-                onTimeUp={() => gameState.setGameOver(true)}
+                onTimeUp={() => setGameOver(true)}
               />
             )}
           </div>
@@ -166,9 +174,7 @@ const EnglishTranslationGame = () => {
           <Button 
             onClick={checkAnswer}
             disabled={!userAnswer}
-            className="bg
-
--purple-600 hover:bg-purple-700 px-8"
+            className="bg-purple-600 hover:bg-purple-700 px-8"
           >
             Submit
           </Button>
