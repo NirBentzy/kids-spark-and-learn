@@ -1,9 +1,15 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import Welcome from "./pages/Welcome";
+import SubjectSelection from "./pages/SubjectSelection";
+import EnglishSelection from "./pages/EnglishSelection";
+import MathGame from "./pages/MathGame";
+import EnglishLetterGame from "./pages/EnglishLetterGame";
+import EnglishVocabularyGame from "./pages/EnglishVocabularyGame";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -15,8 +21,12 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/" element={<Welcome />} />
+          <Route path="/subjects" element={<SubjectSelection />} />
+          <Route path="/english" element={<EnglishSelection />} />
+          <Route path="/math" element={<MathGame />} />
+          <Route path="/english/letters" element={<EnglishLetterGame />} />
+          <Route path="/english/vocabulary" element={<EnglishVocabularyGame />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
