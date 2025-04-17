@@ -1,8 +1,10 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { GameProvider } from "./contexts/GameContext";
 import Welcome from "./pages/Welcome";
 import SubjectSelection from "./pages/SubjectSelection";
 import EnglishSelection from "./pages/EnglishSelection";
@@ -20,16 +22,18 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Welcome />} />
-          <Route path="/subjects" element={<SubjectSelection />} />
-          <Route path="/english" element={<EnglishSelection />} />
-          <Route path="/math" element={<MathGame />} />
-          <Route path="/english/letters" element={<EnglishLetterGame />} />
-          <Route path="/english/vocabulary" element={<EnglishVocabularyGame />} />
-          <Route path="/english/translation" element={<EnglishTranslationGame />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <GameProvider>
+          <Routes>
+            <Route path="/" element={<Welcome />} />
+            <Route path="/subjects" element={<SubjectSelection />} />
+            <Route path="/english" element={<EnglishSelection />} />
+            <Route path="/math" element={<MathGame />} />
+            <Route path="/english/letters" element={<EnglishLetterGame />} />
+            <Route path="/english/vocabulary" element={<EnglishVocabularyGame />} />
+            <Route path="/english/translation" element={<EnglishTranslationGame />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </GameProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
