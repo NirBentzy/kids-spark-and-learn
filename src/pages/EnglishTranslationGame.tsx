@@ -9,29 +9,35 @@ import GameTimer from "@/components/GameTimer";
 import { Question } from "@/types";
 import { useGameContext } from "@/contexts/GameContext";
 
-// Simple vocabulary words
-const vocabularyItems = [
-  "apple", "banana", "cat", "dog", "elephant",
-  "fish", "giraffe", "house", "ice cream", "juice",
-  "king", "lion", "monkey", "nest", "orange",
-  "pencil", "queen", "rabbit", "snake", "tiger"
+// English-Hebrew word pairs
+const translationItems = [
+  { english: "apple", hebrew: "תפוח" },
+  { english: "dog", hebrew: "כלב" },
+  { english: "cat", hebrew: "חתול" },
+  { english: "house", hebrew: "בית" },
+  { english: "book", hebrew: "ספר" },
+  { english: "table", hebrew: "שולחן" },
+  { english: "chair", hebrew: "כיסא" },
+  { english: "water", hebrew: "מים" },
+  { english: "bread", hebrew: "לחם" },
+  { english: "tree", hebrew: "עץ" },
 ];
 
-const EnglishVocabularyGame = () => {
+const EnglishTranslationGame = () => {
   const navigate = useNavigate();
   const { gameState, incrementScore, decrementHearts, resetGame } = useGameContext();
   const [userAnswer, setUserAnswer] = useState("");
 
-  // Generate a vocabulary question
-  const generateVocabularyQuestion = (): Question => {
-    const randomIndex = Math.floor(Math.random() * vocabularyItems.length);
-    const word = vocabularyItems[randomIndex];
+  // Generate a translation question
+  const generateTranslationQuestion = (): Question => {
+    const randomIndex = Math.floor(Math.random() * translationItems.length);
+    const item = translationItems[randomIndex];
     
     return {
       id: Date.now(),
       type: 'english-word',
-      content: word,
-      correctAnswer: word,
+      content: item.english,
+      correctAnswer: item.hebrew,
     };
   };
 
@@ -39,7 +45,7 @@ const EnglishVocabularyGame = () => {
   const checkAnswer = () => {
     if (!gameState.currentQuestion) return;
     
-    const isCorrect = userAnswer.toLowerCase() === String(gameState.currentQuestion.correctAnswer).toLowerCase();
+    const isCorrect = userAnswer === String(gameState.currentQuestion.correctAnswer);
     
     if (isCorrect) {
       incrementScore();
@@ -50,13 +56,13 @@ const EnglishVocabularyGame = () => {
     // Reset and generate new question
     setUserAnswer("");
     gameState.setTimeLeft(20);
-    gameState.setCurrentQuestion(generateVocabularyQuestion());
+    gameState.setCurrentQuestion(generateTranslationQuestion());
   };
 
   // Initialize the game
   useEffect(() => {
     resetGame();
-    gameState.setCurrentQuestion(generateVocabularyQuestion());
+    gameState.setCurrentQuestion(generateTranslationQuestion());
   }, []);
 
   if (gameState.gameOver) {
@@ -128,7 +134,7 @@ const EnglishVocabularyGame = () => {
                 <h2 className="text-4xl font-bold text-purple-700 mb-4">
                   {gameState.currentQuestion.content}
                 </h2>
-                <p className="text-xl">Type this word in English</p>
+                <p className="text-xl">Translate this word to Hebrew</p>
               </div>
               
               <div>
@@ -136,7 +142,7 @@ const EnglishVocabularyGame = () => {
                   type="text"
                   value={userAnswer}
                   onChange={e => setUserAnswer(e.target.value)}
-                  placeholder="Enter your answer"
+                  placeholder="הקלד תרגום"
                   className="text-xl text-center p-6 border-purple-200"
                   autoFocus
                   onKeyDown={e => {
@@ -160,7 +166,9 @@ const EnglishVocabularyGame = () => {
           <Button 
             onClick={checkAnswer}
             disabled={!userAnswer}
-            className="bg-purple-600 hover:bg-purple-700 px-8"
+            className="bg
+
+-purple-600 hover:bg-purple-700 px-8"
           >
             Submit
           </Button>
@@ -170,4 +178,4 @@ const EnglishVocabularyGame = () => {
   );
 };
 
-export default EnglishVocabularyGame;
+export default EnglishTranslationGame;

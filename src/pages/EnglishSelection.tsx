@@ -33,10 +33,23 @@ const EnglishSelection = () => {
           >
             <CardContent className="flex items-center justify-between p-6">
               <div>
-                <h2 className="text-xl font-semibold mb-2">Vocabulary</h2>
-                <p className="text-gray-600">Name objects and animals from pictures</p>
+                <h2 className="text-xl font-semibold mb-2">Vocabulary Practice</h2>
+                <p className="text-gray-600">Practice spelling English words</p>
               </div>
-              <span className="text-4xl">🖼️</span>
+              <span className="text-4xl">✍️</span>
+            </CardContent>
+          </Card>
+
+          <Card 
+            className="cursor-pointer hover:shadow-md transition-shadow border-purple-200"
+            onClick={() => navigate("/english/translation")}
+          >
+            <CardContent className="flex items-center justify-between p-6">
+              <div>
+                <h2 className="text-xl font-semibold mb-2">Word Translation</h2>
+                <p className="text-gray-600">Translate English words to Hebrew</p>
+              </div>
+              <span className="text-4xl">🔄</span>
             </CardContent>
           </Card>
         </div>

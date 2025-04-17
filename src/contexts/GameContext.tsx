@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState } from "react";
 import { GameState, Question } from "../types";
 
@@ -13,6 +12,8 @@ interface GameContextType {
   decrementTimeLeft: () => void;
   setGameOver: (over: boolean) => void;
   resetGame: () => void;
+  decrementHearts: () => void;
+  resetHearts: () => void;
 }
 
 const defaultGameState: GameState = {
@@ -22,13 +23,13 @@ const defaultGameState: GameState = {
   currentQuestion: null,
   timeLeft: 20,
   gameOver: false,
+  hearts: 3,
 };
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [gameState, setGameState] = useState<GameState>(() => {
-    // Initialize from localStorage if available
     const storedName = localStorage.getItem("playerName") || "";
     const storedTimer = localStorage.getItem("timerEnabled") === "true";
     
@@ -71,6 +72,20 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setGameState((prev) => ({ ...prev, gameOver: over }));
   };
 
+  const decrementHearts = () => {
+    setGameState((prev) => {
+      const newHearts = prev.hearts - 1;
+      if (newHearts <= 0) {
+        return { ...prev, hearts: 0, gameOver: true };
+      }
+      return { ...prev, hearts: newHearts };
+    });
+  };
+
+  const resetHearts = () => {
+    setGameState((prev) => ({ ...prev, hearts: 3 }));
+  };
+
   const resetGame = () => {
     setGameState((prev) => ({
       ...prev,
@@ -78,6 +93,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       currentQuestion: null,
       timeLeft: 20,
       gameOver: false,
+      hearts: 3,
     }));
   };
 
@@ -94,6 +110,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         decrementTimeLeft,
         setGameOver,
         resetGame,
+        decrementHearts,
+        resetHearts,
       }}
     >
       {children}

@@ -15,4 +15,5 @@ export interface GameState {
   currentQuestion: Question | null;
   timeLeft: number;
   gameOver: boolean;
+  hearts: number;  // Add hearts to track lives
 }
