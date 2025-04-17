@@ -4,17 +4,33 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, HeartOff } from "lucide-react";
+import { Heart, HeartOff, Apple, Fish, Cat, Dog, Home, PenTool, Crown, LucideIcon } from "lucide-react";
 import GameTimer from "@/components/GameTimer";
 import { Question } from "@/types";
 import { useGameContext } from "@/contexts/GameContext";
 
-// Simple vocabulary words
-const vocabularyItems = [
-  "apple", "banana", "cat", "dog", "elephant",
-  "fish", "giraffe", "house", "ice cream", "juice",
-  "king", "lion", "monkey", "nest", "orange",
-  "pencil", "queen", "rabbit", "snake", "tiger"
+// Vocabulary items with corresponding icons
+const vocabularyItems: Array<{ word: string; icon: LucideIcon }> = [
+  { word: "apple", icon: Apple },
+  { word: "banana", icon: PenTool }, // Using PenTool as a placeholder
+  { word: "cat", icon: Cat },
+  { word: "dog", icon: Dog },
+  { word: "elephant", icon: Crown }, // Using Crown as a placeholder
+  { word: "fish", icon: Fish },
+  { word: "giraffe", icon: Crown }, // Using Crown as a placeholder
+  { word: "house", icon: Home },
+  { word: "ice cream", icon: PenTool }, // Using PenTool as a placeholder
+  { word: "juice", icon: PenTool }, // Using PenTool as a placeholder
+  { word: "king", icon: Crown },
+  { word: "lion", icon: Cat }, // Using Cat as a placeholder
+  { word: "monkey", icon: Cat }, // Using Cat as a placeholder
+  { word: "nest", icon: Home }, // Using Home as a placeholder
+  { word: "orange", icon: Apple }, // Using Apple as a placeholder
+  { word: "pencil", icon: PenTool },
+  { word: "queen", icon: Crown },
+  { word: "rabbit", icon: Cat }, // Using Cat as a placeholder
+  { word: "snake", icon: Fish }, // Using Fish as a placeholder
+  { word: "tiger", icon: Cat }, // Using Cat as a placeholder
 ];
 
 const EnglishVocabularyGame = () => {
@@ -33,13 +49,13 @@ const EnglishVocabularyGame = () => {
   // Generate a vocabulary question
   const generateVocabularyQuestion = (): Question => {
     const randomIndex = Math.floor(Math.random() * vocabularyItems.length);
-    const word = vocabularyItems[randomIndex];
+    const item = vocabularyItems[randomIndex];
     
     return {
       id: Date.now(),
       type: 'english-word',
-      content: word,
-      correctAnswer: word,
+      content: item.word,
+      correctAnswer: item.word,
     };
   };
 
@@ -66,6 +82,19 @@ const EnglishVocabularyGame = () => {
     resetGame();
     setCurrentQuestion(generateVocabularyQuestion());
   }, []);
+
+  // Get the current icon to display
+  const getCurrentIcon = () => {
+    if (!gameState.currentQuestion) return null;
+    
+    const currentWord = gameState.currentQuestion.content;
+    const item = vocabularyItems.find(item => item.word === currentWord);
+    
+    if (!item) return null;
+    
+    const IconComponent = item.icon;
+    return <IconComponent size={96} className="text-purple-600" />;
+  };
 
   if (gameState.gameOver) {
     return (
@@ -133,10 +162,10 @@ const EnglishVocabularyGame = () => {
           {gameState.currentQuestion && (
             <>
               <div className="text-center p-6">
-                <h2 className="text-4xl font-bold text-purple-700 mb-4">
-                  {gameState.currentQuestion.content}
-                </h2>
-                <p className="text-xl">Type this word in English</p>
+                <div className="flex justify-center mb-6">
+                  {getCurrentIcon()}
+                </div>
+                <p className="text-xl">Type the word in English</p>
               </div>
               
               <div>
