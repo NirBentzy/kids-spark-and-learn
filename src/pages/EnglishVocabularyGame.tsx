@@ -6,10 +6,10 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Heart, HeartOff } from "lucide-react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faCoffee, faAppleWhole, faCat, faDog, faHouse,
-  faPencil, faCrown, faFish, faBanana, faIceCream,
+  faCoffee, faApple, faCat, faDog, faHouse,
+  faPencil, faCrown, faFish, faCarrot, faIceCream,
   faGlassWater, faChessKing, faOtter, faFeather,
-  faCarrot, faPen, faChessQueen, faPaw, faWorm, faCat as faTiger
+  faCarrot as faOrange, faPen, faChessQueen, faPaw, faWorm
 } from '@fortawesome/free-solid-svg-icons';
 import GameTimer from "@/components/GameTimer";
 import { Question } from "@/types";
@@ -17,8 +17,8 @@ import { useGameContext } from "@/contexts/GameContext";
 
 // Vocabulary items with corresponding icons
 const vocabularyItems = [
-  { word: "apple", icon: faAppleWhole },
-  { word: "banana", icon: faBanana },
+  { word: "apple", icon: faApple },
+  { word: "banana", icon: faCarrot }, // Using carrot as a replacement
   { word: "cat", icon: faCat },
   { word: "dog", icon: faDog },
   { word: "elephant", icon: faOtter }, // Using otter as placeholder
@@ -31,12 +31,12 @@ const vocabularyItems = [
   { word: "lion", icon: faCat },
   { word: "monkey", icon: faPaw },
   { word: "nest", icon: faFeather },
-  { word: "orange", icon: faAppleWhole },
+  { word: "orange", icon: faOrange },
   { word: "pencil", icon: faPencil },
   { word: "queen", icon: faChessQueen },
   { word: "rabbit", icon: faPaw },
   { word: "snake", icon: faWorm },
-  { word: "tiger", icon: faTiger }
+  { word: "tiger", icon: faCat }
 ];
 
 const EnglishVocabularyGame = () => {
