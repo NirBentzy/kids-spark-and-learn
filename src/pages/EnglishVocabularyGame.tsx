@@ -3,42 +3,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, HeartOff } from "lucide-react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faCoffee, faAppleAlt, faCat, faDog, faHouse,
-  faPencil, faCrown, faFish, faCarrot, faIceCream,
-  faGlassWater, faChessKing, faOtter, faFeather,
-  faLemon, faPen, faChessQueen, faPaw, faWorm
-} from '@fortawesome/free-solid-svg-icons';
-import GameTimer from "@/components/GameTimer";
-import { Question } from "@/types";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { useGameContext } from "@/contexts/GameContext";
-
-// Vocabulary items with corresponding icons
-const vocabularyItems = [
-  { word: "apple", icon: faAppleAlt },
-  { word: "banana", icon: faCarrot }, // Using carrot as a replacement
-  { word: "cat", icon: faCat },
-  { word: "dog", icon: faDog },
-  { word: "elephant", icon: faOtter }, // Using otter as placeholder
-  { word: "fish", icon: faFish },
-  { word: "giraffe", icon: faPaw }, // Using paw as placeholder
-  { word: "house", icon: faHouse },
-  { word: "ice cream", icon: faIceCream },
-  { word: "juice", icon: faGlassWater },
-  { word: "king", icon: faChessKing },
-  { word: "lion", icon: faCat },
-  { word: "monkey", icon: faPaw },
-  { word: "nest", icon: faFeather },
-  { word: "orange", icon: faLemon }, // Using lemon as a replacement
-  { word: "pencil", icon: faPencil },
-  { word: "queen", icon: faChessQueen },
-  { word: "rabbit", icon: faPaw },
-  { word: "snake", icon: faWorm },
-  { word: "tiger", icon: faCat }
-];
+import { generateVocabularyQuestion, getCurrentIcon } from "@/utils/vocabularyUtils";
+import GameOver from "@/components/GameOver";
+import GameHeader from "@/components/GameHeader";
 
 const EnglishVocabularyGame = () => {
   const navigate = useNavigate();
@@ -54,20 +23,6 @@ const EnglishVocabularyGame = () => {
   const [userAnswer, setUserAnswer] = useState("");
   const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
 
-  // Generate a vocabulary question
-  const generateVocabularyQuestion = (): Question => {
-    const randomIndex = Math.floor(Math.random() * vocabularyItems.length);
-    const item = vocabularyItems[randomIndex];
-    
-    return {
-      id: Date.now(),
-      type: 'english-word',
-      content: item.word,
-      correctAnswer: item.word,
-    };
-  };
-
-  // Check the answer
   const checkAnswer = () => {
     if (!gameState.currentQuestion) return;
     
@@ -84,7 +39,6 @@ const EnglishVocabularyGame = () => {
     }
   };
 
-  // Continue to next question after showing correct answer
   const handleContinue = () => {
     setShowCorrectAnswer(false);
     setUserAnswer("");
@@ -92,54 +46,23 @@ const EnglishVocabularyGame = () => {
     setCurrentQuestion(generateVocabularyQuestion());
   };
 
-  // Initialize the game
+  const handleRestart = () => {
+    resetGame();
+    setCurrentQuestion(generateVocabularyQuestion());
+  };
+
   useEffect(() => {
     resetGame();
     setCurrentQuestion(generateVocabularyQuestion());
   }, []);
 
-  // Get the current icon to display
-  const getCurrentIcon = () => {
-    if (!gameState.currentQuestion) return null;
-    
-    const currentWord = gameState.currentQuestion.content;
-    const item = vocabularyItems.find(item => item.word === currentWord);
-    
-    if (!item) return null;
-    
-    return <FontAwesomeIcon icon={item.icon} size="6x" className="text-purple-600" />;
-  };
-
   if (gameState.gameOver) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-purple-50 p-4">
-        <Card className="w-full max-w-md shadow-lg border-purple-200">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold text-purple-700">
-              Game Over!
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-xl mb-4">Good job, {gameState.playerName}!</p>
-            <p className="text-3xl font-bold mb-6">Your Score: {gameState.score}</p>
-          </CardContent>
-          <CardFooter className="flex gap-4">
-            <Button 
-              onClick={resetGame}
-              className="flex-1 bg-purple-600 hover:bg-purple-700"
-            >
-              Play Again
-            </Button>
-            <Button 
-              variant="outline"
-              onClick={() => navigate("/english")}
-              className="flex-1 border-purple-300"
-            >
-              Choose Activity
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
+      <GameOver 
+        playerName={gameState.playerName}
+        score={gameState.score}
+        onRestart={handleRestart}
+      />
     );
   }
 
@@ -147,43 +70,30 @@ const EnglishVocabularyGame = () => {
     <div className="min-h-screen flex items-center justify-center bg-purple-50 p-4">
       <Card className="w-full max-w-md shadow-lg border-purple-200">
         <CardHeader>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <div>
-                <p className="text-sm text-gray-500">Player: {gameState.playerName}</p>
-                <p className="text-lg font-bold">Score: {gameState.score}</p>
-              </div>
-              <div className="flex gap-1">
-                {Array.from({ length: gameState.hearts }).map((_, i) => (
-                  <Heart key={`heart-${i}`} className="text-red-500" size={24} />
-                ))}
-                {Array.from({ length: 3 - gameState.hearts }).map((_, i) => (
-                  <HeartOff key={`heart-off-${i}`} className="text-gray-300" size={24} />
-                ))}
-              </div>
-            </div>
-            {gameState.timerEnabled && (
-              <GameTimer
-                timeLeft={gameState.timeLeft}
-                maxTime={20}
-                isRunning={!gameState.gameOver}
-                onTimeUp={() => setGameOver(true)}
-              />
-            )}
-          </div>
+          <GameHeader 
+            playerName={gameState.playerName}
+            score={gameState.score}
+            hearts={gameState.hearts}
+            timeLeft={gameState.timeLeft}
+            timerEnabled={gameState.timerEnabled}
+            gameOver={gameState.gameOver}
+            onTimeUp={() => setGameOver(true)}
+          />
         </CardHeader>
         <CardContent className="space-y-6">
           {gameState.currentQuestion && (
             <>
               <div className="text-center p-6">
                 <div className="flex justify-center mb-6">
-                  {getCurrentIcon()}
+                  {getCurrentIcon(gameState.currentQuestion.content)}
                 </div>
                 <p className="text-xl">Type the word in English</p>
                 {showCorrectAnswer && (
                   <div className="mt-4">
                     <p className="text-red-500 mb-2">Incorrect! The correct word was:</p>
-                    <p className="text-2xl font-bold text-purple-700">{gameState.currentQuestion.content}</p>
+                    <p className="text-2xl font-bold text-purple-700">
+                      {gameState.currentQuestion.content}
+                    </p>
                   </div>
                 )}
               </div>
