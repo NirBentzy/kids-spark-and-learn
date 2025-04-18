@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -35,10 +34,24 @@ const EnglishTranslationGame = () => {
     setGameOver
   } = useGameContext();
   const [userAnswer, setUserAnswer] = useState("");
+  const [usedWordIndices, setUsedWordIndices] = useState<number[]>([]);
 
-  // Generate a translation question
+  // Generate a translation question that hasn't been used yet in this session
   const generateTranslationQuestion = (): Question => {
-    const randomIndex = Math.floor(Math.random() * translationItems.length);
+    // If all words have been used, reset the used words array
+    if (usedWordIndices.length >= translationItems.length) {
+      setUsedWordIndices([]);
+    }
+    
+    // Find an unused word
+    let randomIndex;
+    do {
+      randomIndex = Math.floor(Math.random() * translationItems.length);
+    } while (usedWordIndices.includes(randomIndex));
+    
+    // Add this index to used words
+    setUsedWordIndices(prev => [...prev, randomIndex]);
+    
     const item = translationItems[randomIndex];
     
     return {
@@ -70,9 +83,11 @@ const EnglishTranslationGame = () => {
   // Initialize the game
   useEffect(() => {
     resetGame();
+    setUsedWordIndices([]);
     setCurrentQuestion(generateTranslationQuestion());
   }, []);
 
+  // Game over screen
   if (gameState.gameOver) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-purple-50 p-4">
@@ -88,7 +103,11 @@ const EnglishTranslationGame = () => {
           </CardContent>
           <CardFooter className="flex gap-4">
             <Button 
-              onClick={resetGame}
+              onClick={() => {
+                resetGame();
+                setUsedWordIndices([]);
+                setCurrentQuestion(generateTranslationQuestion());
+              }}
               className="flex-1 bg-purple-600 hover:bg-purple-700"
             >
               Play Again
@@ -106,6 +125,7 @@ const EnglishTranslationGame = () => {
     );
   }
 
+  // Main game screen
   return (
     <div className="min-h-screen flex items-center justify-center bg-purple-50 p-4">
       <Card className="w-full max-w-md shadow-lg border-purple-200">
