@@ -1,21 +1,25 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Heart, HeartOff } from "lucide-react";
 import GameTimer from "@/components/GameTimer";
 import { Question } from "@/types";
+import { useGameContext } from "@/contexts/GameContext";
 
 const MathGame = () => {
   const navigate = useNavigate();
-  const [score, setScore] = useState(0);
-  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
+  const { 
+    gameState, 
+    incrementScore, 
+    decrementHearts, 
+    resetGame,
+    setCurrentQuestion,
+    setTimeLeft,
+    setGameOver
+  } = useGameContext();
   const [userAnswer, setUserAnswer] = useState("");
-  const [timeLeft, setTimeLeft] = useState(20);
-  const [gameOver, setGameOver] = useState(false);
-  const [timerEnabled] = useState(() => localStorage.getItem("timerEnabled") === "true");
-  const [playerName] = useState(() => localStorage.getItem("playerName") || "Player");
 
   // Generate a math question
   const generateMathQuestion = (): Question => {
@@ -47,12 +51,14 @@ const MathGame = () => {
 
   // Check the answer
   const checkAnswer = () => {
-    if (!currentQuestion) return;
+    if (!gameState.currentQuestion) return;
     
-    const isCorrect = Number(userAnswer) === Number(currentQuestion.correctAnswer);
+    const isCorrect = Number(userAnswer) === Number(gameState.currentQuestion.correctAnswer);
     
     if (isCorrect) {
-      setScore(score + 1);
+      incrementScore();
+    } else {
+      decrementHearts();
     }
     
     // Reset and generate new question
@@ -61,46 +67,13 @@ const MathGame = () => {
     setCurrentQuestion(generateMathQuestion());
   };
 
-  // Handle time up
-  const handleTimeUp = () => {
-    if (timerEnabled) {
-      setGameOver(true);
-    }
-  };
-
-  // Reset the game
-  const resetGame = () => {
-    setScore(0);
-    setUserAnswer("");
-    setTimeLeft(20);
-    setGameOver(false);
-    setCurrentQuestion(generateMathQuestion());
-  };
-
   // Initialize the game
   useEffect(() => {
     resetGame();
+    setCurrentQuestion(generateMathQuestion());
   }, []);
 
-  // Countdown timer
-  useEffect(() => {
-    if (!timerEnabled || gameOver || timeLeft <= 0) return;
-    
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          handleTimeUp();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    
-    return () => clearInterval(timer);
-  }, [timerEnabled, gameOver, timeLeft]);
-
-  if (gameOver) {
+  if (gameState.gameOver) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-purple-50 p-4">
         <Card className="w-full max-w-md shadow-lg border-purple-200">
@@ -110,8 +83,8 @@ const MathGame = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="text-center">
-            <p className="text-xl mb-4">Good job, {playerName}!</p>
-            <p className="text-3xl font-bold mb-6">Your Score: {score}</p>
+            <p className="text-xl mb-4">Good job, {gameState.playerName}!</p>
+            <p className="text-3xl font-bold mb-6">Your Score: {gameState.score}</p>
           </CardContent>
           <CardFooter className="flex gap-4">
             <Button 
@@ -138,26 +111,34 @@ const MathGame = () => {
       <Card className="w-full max-w-md shadow-lg border-purple-200">
         <CardHeader>
           <div className="flex justify-between items-center">
-            <div>
-              <p className="text-sm text-gray-500">Player: {playerName}</p>
-              <p className="text-lg font-bold">Score: {score}</p>
+            <div className="flex items-center gap-4">
+              <div>
+                <p className="text-sm text-gray-500">Player: {gameState.playerName}</p>
+                <p className="text-lg font-bold">Score: {gameState.score}</p>
+              </div>
+              <div className="flex gap-1">
+                {Array.from({ length: gameState.hearts }).map((_, i) => (
+                  <Heart key={`heart-${i}`} className="text-red-500" size={24} />
+                ))}
+                {Array.from({ length: 3 - gameState.hearts }).map((_, i) => (
+                  <HeartOff key={`heart-off-${i}`} className="text-gray-300" size={24} />
+                ))}
+              </div>
             </div>
-            {timerEnabled && (
-              <GameTimer
-                timeLeft={timeLeft}
-                maxTime={20}
-                isRunning={!gameOver}
-                onTimeUp={handleTimeUp}
-              />
-            )}
+            <GameTimer
+              timeLeft={gameState.timeLeft}
+              maxTime={20}
+              isRunning={!gameState.gameOver}
+              onTimeUp={() => setGameOver(true)}
+            />
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          {currentQuestion && (
+          {gameState.currentQuestion && (
             <>
               <div className="text-center p-6">
                 <h2 className="text-4xl font-bold text-purple-700">
-                  {currentQuestion.content} = ?
+                  {gameState.currentQuestion.content} = ?
                 </h2>
               </div>
               

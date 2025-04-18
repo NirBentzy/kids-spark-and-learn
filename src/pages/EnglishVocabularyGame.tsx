@@ -45,6 +45,7 @@ const EnglishVocabularyGame = () => {
     setGameOver
   } = useGameContext();
   const [userAnswer, setUserAnswer] = useState("");
+  const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
 
   // Generate a vocabulary question
   const generateVocabularyQuestion = (): Question => {
@@ -67,11 +68,18 @@ const EnglishVocabularyGame = () => {
     
     if (isCorrect) {
       incrementScore();
+      setUserAnswer("");
+      setTimeLeft(20);
+      setCurrentQuestion(generateVocabularyQuestion());
     } else {
       decrementHearts();
+      setShowCorrectAnswer(true);
     }
-    
-    // Reset and generate new question
+  };
+
+  // Continue to next question after showing correct answer
+  const handleContinue = () => {
+    setShowCorrectAnswer(false);
     setUserAnswer("");
     setTimeLeft(20);
     setCurrentQuestion(generateVocabularyQuestion());
@@ -166,6 +174,12 @@ const EnglishVocabularyGame = () => {
                   {getCurrentIcon()}
                 </div>
                 <p className="text-xl">Type the word in English</p>
+                {showCorrectAnswer && (
+                  <div className="mt-4">
+                    <p className="text-red-500 mb-2">Incorrect! The correct word was:</p>
+                    <p className="text-2xl font-bold text-purple-700">{gameState.currentQuestion.content}</p>
+                  </div>
+                )}
               </div>
               
               <div>
@@ -177,7 +191,7 @@ const EnglishVocabularyGame = () => {
                   className="text-xl text-center p-6 border-purple-200"
                   autoFocus
                   onKeyDown={e => {
-                    if (e.key === 'Enter') {
+                    if (e.key === 'Enter' && !showCorrectAnswer) {
                       checkAnswer();
                     }
                   }}
@@ -194,13 +208,22 @@ const EnglishVocabularyGame = () => {
           >
             Exit Game
           </Button>
-          <Button 
-            onClick={checkAnswer}
-            disabled={!userAnswer}
-            className="bg-purple-600 hover:bg-purple-700 px-8"
-          >
-            Submit
-          </Button>
+          {showCorrectAnswer ? (
+            <Button 
+              onClick={handleContinue}
+              className="bg-purple-600 hover:bg-purple-700 px-8"
+            >
+              Continue
+            </Button>
+          ) : (
+            <Button 
+              onClick={checkAnswer}
+              disabled={!userAnswer}
+              className="bg-purple-600 hover:bg-purple-700 px-8"
+            >
+              Submit
+            </Button>
+          )}
         </CardFooter>
       </Card>
     </div>
