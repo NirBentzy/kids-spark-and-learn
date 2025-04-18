@@ -1,36 +1,42 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, HeartOff, Apple, Fish, Cat, Dog, Home, PenTool, Crown, LucideIcon } from "lucide-react";
+import { Heart, HeartOff } from "lucide-react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faCoffee, faAppleWhole, faCat, faDog, faHouse,
+  faPencil, faCrown, faFish, faBanana, faIceCream,
+  faGlassWater, faChessKing, faOtter, faFeather,
+  faCarrot, faPen, faChessQueen, faPaw, faWorm, faCat as faTiger
+} from '@fortawesome/free-solid-svg-icons';
 import GameTimer from "@/components/GameTimer";
 import { Question } from "@/types";
 import { useGameContext } from "@/contexts/GameContext";
 
 // Vocabulary items with corresponding icons
-const vocabularyItems: Array<{ word: string; icon: LucideIcon }> = [
-  { word: "apple", icon: Apple },
-  { word: "banana", icon: PenTool }, // Using PenTool as a placeholder
-  { word: "cat", icon: Cat },
-  { word: "dog", icon: Dog },
-  { word: "elephant", icon: Crown }, // Using Crown as a placeholder
-  { word: "fish", icon: Fish },
-  { word: "giraffe", icon: Crown }, // Using Crown as a placeholder
-  { word: "house", icon: Home },
-  { word: "ice cream", icon: PenTool }, // Using PenTool as a placeholder
-  { word: "juice", icon: PenTool }, // Using PenTool as a placeholder
-  { word: "king", icon: Crown },
-  { word: "lion", icon: Cat }, // Using Cat as a placeholder
-  { word: "monkey", icon: Cat }, // Using Cat as a placeholder
-  { word: "nest", icon: Home }, // Using Home as a placeholder
-  { word: "orange", icon: Apple }, // Using Apple as a placeholder
-  { word: "pencil", icon: PenTool },
-  { word: "queen", icon: Crown },
-  { word: "rabbit", icon: Cat }, // Using Cat as a placeholder
-  { word: "snake", icon: Fish }, // Using Fish as a placeholder
-  { word: "tiger", icon: Cat }, // Using Cat as a placeholder
+const vocabularyItems = [
+  { word: "apple", icon: faAppleWhole },
+  { word: "banana", icon: faBanana },
+  { word: "cat", icon: faCat },
+  { word: "dog", icon: faDog },
+  { word: "elephant", icon: faOtter }, // Using otter as placeholder
+  { word: "fish", icon: faFish },
+  { word: "giraffe", icon: faPaw }, // Using paw as placeholder
+  { word: "house", icon: faHouse },
+  { word: "ice cream", icon: faIceCream },
+  { word: "juice", icon: faGlassWater },
+  { word: "king", icon: faChessKing },
+  { word: "lion", icon: faCat },
+  { word: "monkey", icon: faPaw },
+  { word: "nest", icon: faFeather },
+  { word: "orange", icon: faAppleWhole },
+  { word: "pencil", icon: faPencil },
+  { word: "queen", icon: faChessQueen },
+  { word: "rabbit", icon: faPaw },
+  { word: "snake", icon: faWorm },
+  { word: "tiger", icon: faTiger }
 ];
 
 const EnglishVocabularyGame = () => {
@@ -100,8 +106,7 @@ const EnglishVocabularyGame = () => {
     
     if (!item) return null;
     
-    const IconComponent = item.icon;
-    return <IconComponent size={96} className="text-purple-600" />;
+    return <FontAwesomeIcon icon={item.icon} size="6x" className="text-purple-600" />;
   };
 
   if (gameState.gameOver) {
