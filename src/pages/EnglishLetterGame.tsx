@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -84,16 +85,15 @@ const EnglishLetterGame = () => {
     setGameOver(true);
   };
 
-  // Reset the game
-  const resetGame = () => {
+  // Initialize the game - using the resetGame function from context
+  const initializeGame = () => {
     resetGame();
     setCurrentQuestion(generateLetterQuestion());
   };
 
   // Initialize the game
   useEffect(() => {
-    resetGame();
-    setCurrentQuestion(generateLetterQuestion());
+    initializeGame();
   }, []);
 
   return (
