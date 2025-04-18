@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,10 +7,10 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Heart, HeartOff } from "lucide-react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faCoffee, faApple, faCat, faDog, faHouse,
+  faCoffee, faAppleAlt, faCat, faDog, faHouse,
   faPencil, faCrown, faFish, faCarrot, faIceCream,
   faGlassWater, faChessKing, faOtter, faFeather,
-  faCarrot as faOrange, faPen, faChessQueen, faPaw, faWorm
+  faLemon, faPen, faChessQueen, faPaw, faWorm
 } from '@fortawesome/free-solid-svg-icons';
 import GameTimer from "@/components/GameTimer";
 import { Question } from "@/types";
@@ -17,7 +18,7 @@ import { useGameContext } from "@/contexts/GameContext";
 
 // Vocabulary items with corresponding icons
 const vocabularyItems = [
-  { word: "apple", icon: faApple },
+  { word: "apple", icon: faAppleAlt },
   { word: "banana", icon: faCarrot }, // Using carrot as a replacement
   { word: "cat", icon: faCat },
   { word: "dog", icon: faDog },
@@ -31,7 +32,7 @@ const vocabularyItems = [
   { word: "lion", icon: faCat },
   { word: "monkey", icon: faPaw },
   { word: "nest", icon: faFeather },
-  { word: "orange", icon: faOrange },
+  { word: "orange", icon: faLemon }, // Using lemon as a replacement
   { word: "pencil", icon: faPencil },
   { word: "queen", icon: faChessQueen },
   { word: "rabbit", icon: faPaw },
