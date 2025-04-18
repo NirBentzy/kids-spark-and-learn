@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ const MathGame = () => {
     resetGame,
     setCurrentQuestion,
     setTimeLeft,
+    decrementTimeLeft,
     setGameOver
   } = useGameContext();
   const [userAnswer, setUserAnswer] = useState("");
@@ -125,12 +127,14 @@ const MathGame = () => {
                 ))}
               </div>
             </div>
-            <GameTimer
-              timeLeft={gameState.timeLeft}
-              maxTime={20}
-              isRunning={!gameState.gameOver}
-              onTimeUp={() => setGameOver(true)}
-            />
+            {gameState.timerEnabled && (
+              <GameTimer
+                timeLeft={gameState.timeLeft}
+                maxTime={20}
+                isRunning={!gameState.gameOver}
+                onTimeUp={() => setGameOver(true)}
+              />
+            )}
           </div>
         </CardHeader>
         <CardContent className="space-y-6">

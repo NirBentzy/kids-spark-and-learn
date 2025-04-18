@@ -1,6 +1,7 @@
 
 import React, { useEffect } from 'react';
 import { Progress } from "@/components/ui/progress";
+import { useGameContext } from "@/contexts/GameContext";
 
 interface GameTimerProps {
   timeLeft: number;
@@ -10,11 +11,14 @@ interface GameTimerProps {
 }
 
 const GameTimer: React.FC<GameTimerProps> = ({ timeLeft, maxTime, isRunning, onTimeUp }) => {
+  const { decrementTimeLeft } = useGameContext();
+  
   useEffect(() => {
     let timerId: number;
     
     if (isRunning && timeLeft > 0) {
       timerId = window.setInterval(() => {
+        decrementTimeLeft();
         if (timeLeft <= 1) {
           onTimeUp();
         }
@@ -24,7 +28,7 @@ const GameTimer: React.FC<GameTimerProps> = ({ timeLeft, maxTime, isRunning, onT
     return () => {
       if (timerId) clearInterval(timerId);
     };
-  }, [timeLeft, isRunning, onTimeUp]);
+  }, [timeLeft, isRunning, onTimeUp, decrementTimeLeft]);
   
   const percentage = (timeLeft / maxTime) * 100;
   
