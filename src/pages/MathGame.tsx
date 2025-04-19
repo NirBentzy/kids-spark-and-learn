@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { Heart, HeartOff } from "lucide-react";
 import GameTimer from "@/components/GameTimer";
 import { Question } from "@/types";
 import { useGameContext } from "@/contexts/GameContext";
+import { ConfettiEffect } from '@/components/ConfettiEffect';
 
 const MathGame = () => {
   const navigate = useNavigate();
@@ -22,6 +22,7 @@ const MathGame = () => {
     setGameOver
   } = useGameContext();
   const [userAnswer, setUserAnswer] = useState("");
+  const [showConfetti, setShowConfetti] = useState(false);
 
   // Generate a math question
   const generateMathQuestion = (): Question => {
@@ -51,7 +52,6 @@ const MathGame = () => {
     };
   };
 
-  // Check the answer
   const checkAnswer = () => {
     if (!gameState.currentQuestion) return;
     
@@ -59,17 +59,16 @@ const MathGame = () => {
     
     if (isCorrect) {
       incrementScore();
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 2000);
+      setUserAnswer("");
+      setTimeLeft(20);
+      setCurrentQuestion(generateMathQuestion());
     } else {
       decrementHearts();
     }
-    
-    // Reset and generate new question
-    setUserAnswer("");
-    setTimeLeft(20);
-    setCurrentQuestion(generateMathQuestion());
   };
 
-  // Initialize the game
   useEffect(() => {
     resetGame();
     setCurrentQuestion(generateMathQuestion());
@@ -109,7 +108,8 @@ const MathGame = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-purple-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-purple-50 p-2">
+      {showConfetti && <ConfettiEffect />}
       <Card className="w-full max-w-md shadow-lg border-purple-200">
         <CardHeader>
           <div className="flex justify-between items-center">

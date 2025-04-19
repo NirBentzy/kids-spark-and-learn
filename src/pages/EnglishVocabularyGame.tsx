@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { useGameContext } from "@/contexts/GameContext";
 import { generateVocabularyQuestion, getCurrentIcon } from "@/utils/vocabularyUtils";
 import GameOver from "@/components/GameOver";
 import GameHeader from "@/components/GameHeader";
+import { ConfettiEffect } from '@/components/ConfettiEffect';
 
 const EnglishVocabularyGame = () => {
   const navigate = useNavigate();
@@ -22,6 +22,7 @@ const EnglishVocabularyGame = () => {
   } = useGameContext();
   const [userAnswer, setUserAnswer] = useState("");
   const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const checkAnswer = () => {
     if (!gameState.currentQuestion) return;
@@ -30,6 +31,8 @@ const EnglishVocabularyGame = () => {
     
     if (isCorrect) {
       incrementScore();
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 2000);
       setUserAnswer("");
       setTimeLeft(20);
       setCurrentQuestion(generateVocabularyQuestion());
@@ -67,7 +70,8 @@ const EnglishVocabularyGame = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-purple-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-purple-50 p-2">
+      {showConfetti && <ConfettiEffect />}
       <Card className="w-full max-w-md shadow-lg border-purple-200">
         <CardHeader>
           <GameHeader 

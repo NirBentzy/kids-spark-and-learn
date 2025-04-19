@@ -7,6 +7,7 @@ import { Question } from "@/types";
 import { useGameContext } from "@/contexts/GameContext";
 import GameHeader from "@/components/GameHeader";
 import GameOver from "@/components/GameOver";
+import { ConfettiEffect } from '@/components/ConfettiEffect';
 
 const EnglishLetterGame = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const EnglishLetterGame = () => {
     setGameOver
   } = useGameContext();
   const [userAnswer, setUserAnswer] = useState("");
+  const [showConfetti, setShowConfetti] = useState(false);
 
   // Generate a letter question
   const generateLetterQuestion = (): Question => {
@@ -70,6 +72,8 @@ const EnglishLetterGame = () => {
     
     if (isCorrect) {
       incrementScore();
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 2000);
       setUserAnswer("");
       setTimeLeft(20);
       setCurrentQuestion(generateLetterQuestion());
@@ -105,7 +109,8 @@ const EnglishLetterGame = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-purple-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-purple-50 p-2">
+      {showConfetti && <ConfettiEffect />}
       <Card className="w-full max-w-md shadow-lg border-purple-200">
         <GameHeader
           playerName={gameState.playerName}
@@ -116,15 +121,19 @@ const EnglishLetterGame = () => {
           gameOver={gameState.gameOver}
           onTimeUp={handleTimeUp}
         />
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4">
           {gameState.currentQuestion && gameState.currentQuestion.options && (
             <>
-              <div className="text-center p-6">
+              <div className="text-center p-4">
                 <h2 className="text-5xl font-bold text-purple-700 mb-4">
                   {gameState.currentQuestion.content}
                 </h2>
                 <p className="text-xl">
-                  What letter comes {gameState.currentQuestion.options[0]} this letter?
+                  What letter comes{' '}
+                  <span className="font-bold bg-yellow-200 px-1">
+                    {gameState.currentQuestion.options[0]}
+                  </span>{' '}
+                  this letter?
                 </p>
               </div>
               
@@ -133,7 +142,6 @@ const EnglishLetterGame = () => {
                   type="text"
                   value={userAnswer}
                   onChange={e => {
-                    // Only allow a single letter
                     if (e.target.value.length <= 1) {
                       setUserAnswer(e.target.value);
                     }
