@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +23,7 @@ const MathGame = () => {
   } = useGameContext();
   const [userAnswer, setUserAnswer] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Generate a math question
   const generateMathQuestion = (): Question => {
@@ -68,6 +68,8 @@ const MathGame = () => {
       setUserAnswer("");
       setTimeLeft(20);
       setCurrentQuestion(generateMathQuestion());
+      // Focus the input after state updates
+      setTimeout(() => inputRef.current?.focus(), 0);
     } else {
       decrementHearts();
     }
@@ -112,7 +114,7 @@ const MathGame = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-purple-50 p-2">
+    <div className="min-h-screen flex items-center justify-center bg-purple-50 p-4">
       {showConfetti && <ConfettiEffect />}
       <Card className="w-full max-w-md shadow-lg border-purple-200">
         <CardHeader>
@@ -152,6 +154,7 @@ const MathGame = () => {
               
               <div>
                 <Input
+                  ref={inputRef}
                   type="number"
                   value={userAnswer}
                   onChange={e => setUserAnswer(e.target.value)}
@@ -159,7 +162,7 @@ const MathGame = () => {
                   className="text-2xl text-center p-6 border-purple-200"
                   autoFocus
                   onKeyDown={e => {
-                    if (e.key === 'Enter') {
+                    if (e.key === 'Enter' && userAnswer) {
                       checkAnswer();
                     }
                   }}

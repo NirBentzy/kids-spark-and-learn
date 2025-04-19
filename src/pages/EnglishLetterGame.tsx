@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +22,7 @@ const EnglishLetterGame = () => {
   } = useGameContext();
   const [userAnswer, setUserAnswer] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Generate a letter question
   const generateLetterQuestion = (): Question => {
@@ -73,14 +73,15 @@ const EnglishLetterGame = () => {
     
     if (isCorrect) {
       incrementScore();
-      // Immediately show confetti
-      setShowConfetti(false); // Reset first to ensure re-render
+      setShowConfetti(false);
       setTimeout(() => setShowConfetti(true), 0);
       setTimeout(() => setShowConfetti(false), 2500);
       
       setUserAnswer("");
       setTimeLeft(20);
       setCurrentQuestion(generateLetterQuestion());
+      // Focus the input after state updates
+      setTimeout(() => inputRef.current?.focus(), 0);
     } else {
       decrementHearts();
       if (gameState.hearts > 0) {
@@ -143,6 +144,7 @@ const EnglishLetterGame = () => {
               
               <div>
                 <Input
+                  ref={inputRef}
                   type="text"
                   value={userAnswer}
                   onChange={e => {
@@ -155,7 +157,7 @@ const EnglishLetterGame = () => {
                   autoFocus
                   maxLength={1}
                   onKeyDown={e => {
-                    if (e.key === 'Enter') {
+                    if (e.key === 'Enter' && userAnswer) {
                       checkAnswer();
                     }
                   }}

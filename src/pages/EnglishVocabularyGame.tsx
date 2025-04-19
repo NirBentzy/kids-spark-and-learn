@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +23,7 @@ const EnglishVocabularyGame = () => {
   const [userAnswer, setUserAnswer] = useState("");
   const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const checkAnswer = () => {
     if (!gameState.currentQuestion) return;
@@ -32,14 +32,15 @@ const EnglishVocabularyGame = () => {
     
     if (isCorrect) {
       incrementScore();
-      // Immediately show confetti
-      setShowConfetti(false); // Reset first to ensure re-render
+      setShowConfetti(false);
       setTimeout(() => setShowConfetti(true), 0);
       setTimeout(() => setShowConfetti(false), 2500);
       
       setUserAnswer("");
       setTimeLeft(20);
       setCurrentQuestion(generateVocabularyQuestion());
+      // Focus the input after state updates
+      setTimeout(() => inputRef.current?.focus(), 0);
     } else {
       decrementHearts();
       setShowCorrectAnswer(true);
@@ -51,6 +52,8 @@ const EnglishVocabularyGame = () => {
     setUserAnswer("");
     setTimeLeft(20);
     setCurrentQuestion(generateVocabularyQuestion());
+    // Focus the input after continuing
+    setTimeout(() => inputRef.current?.focus(), 0);
   };
 
   const handleRestart = () => {
@@ -108,6 +111,7 @@ const EnglishVocabularyGame = () => {
               
               <div>
                 <Input
+                  ref={inputRef}
                   type="text"
                   value={userAnswer}
                   onChange={e => setUserAnswer(e.target.value)}
@@ -115,7 +119,7 @@ const EnglishVocabularyGame = () => {
                   className="text-xl text-center p-6 border-purple-200"
                   autoFocus
                   onKeyDown={e => {
-                    if (e.key === 'Enter' && !showCorrectAnswer) {
+                    if (e.key === 'Enter' && !showCorrectAnswer && userAnswer) {
                       checkAnswer();
                     }
                   }}
