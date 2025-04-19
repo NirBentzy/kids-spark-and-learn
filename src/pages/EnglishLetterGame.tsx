@@ -1,13 +1,12 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, HeartOff } from "lucide-react";
-import GameTimer from "@/components/GameTimer";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Question } from "@/types";
 import { useGameContext } from "@/contexts/GameContext";
+import GameHeader from "@/components/GameHeader";
+import GameOver from "@/components/GameOver";
 
 const EnglishLetterGame = () => {
   const navigate = useNavigate();
@@ -58,7 +57,6 @@ const EnglishLetterGame = () => {
     };
   };
 
-  // Check the answer
   const checkAnswer = () => {
     if (!gameState.currentQuestion) return;
     
@@ -77,36 +75,47 @@ const EnglishLetterGame = () => {
       setCurrentQuestion(generateLetterQuestion());
     } else {
       decrementHearts();
+      if (gameState.hearts > 0) {
+        setUserAnswer("");
+      }
     }
   };
 
-  // Handle time up
   const handleTimeUp = () => {
     setGameOver(true);
   };
 
-  // Initialize the game - using the resetGame function from context
   const initializeGame = () => {
     resetGame();
     setCurrentQuestion(generateLetterQuestion());
   };
 
-  // Initialize the game
   useEffect(() => {
     initializeGame();
   }, []);
 
+  if (gameState.gameOver) {
+    return (
+      <GameOver 
+        playerName={gameState.playerName}
+        score={gameState.score}
+        onRestart={initializeGame}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-purple-50 p-4">
       <Card className="w-full max-w-md shadow-lg border-purple-200">
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="text-sm text-gray-500">Player: {gameState.playerName}</p>
-              <p className="text-lg font-bold">Score: {gameState.score}</p>
-            </div>
-          </div>
-        </CardHeader>
+        <GameHeader
+          playerName={gameState.playerName}
+          score={gameState.score}
+          hearts={gameState.hearts}
+          timeLeft={gameState.timeLeft}
+          timerEnabled={gameState.timerEnabled}
+          gameOver={gameState.gameOver}
+          onTimeUp={handleTimeUp}
+        />
         <CardContent className="space-y-6">
           {gameState.currentQuestion && gameState.currentQuestion.options && (
             <>
