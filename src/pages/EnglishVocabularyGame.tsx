@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -31,8 +32,11 @@ const EnglishVocabularyGame = () => {
     
     if (isCorrect) {
       incrementScore();
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 2000);
+      // Immediately show confetti
+      setShowConfetti(false); // Reset first to ensure re-render
+      setTimeout(() => setShowConfetti(true), 0);
+      setTimeout(() => setShowConfetti(false), 2500);
+      
       setUserAnswer("");
       setTimeLeft(20);
       setCurrentQuestion(generateVocabularyQuestion());
