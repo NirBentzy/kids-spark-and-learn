@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useGameContext } from "@/contexts/GameContext";
 import { translationWords } from "@/data/translationLevels";
 import { ConfettiEffect } from '@/components/ConfettiEffect';
@@ -26,6 +27,7 @@ const EnglishTranslationGame = () => {
   const [usedWordIndices, setUsedWordIndices] = useState<number[]>([]);
   const [currentLevel, setCurrentLevel] = useState(1);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showError, setShowError] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Calculate current level based on score
@@ -40,15 +42,22 @@ const EnglishTranslationGame = () => {
     const levelWords = translationWords.filter(word => word.level === currentLevel);
     
     if (usedWordIndices.length >= levelWords.length) {
-      setUsedWordIndices([]);
+      // If we've used all words in this level, move to next level or reset if at max level
+      if (currentLevel < 3) {
+        setCurrentLevel(prev => prev + 1);
+        setUsedWordIndices([]);
+      } else {
+        setGameOver(true);
+        return null;
+      }
     }
     
     let availableIndices = levelWords.map((_, index) => index)
       .filter(index => !usedWordIndices.includes(index));
     
     if (availableIndices.length === 0) {
-      setUsedWordIndices([]);
-      availableIndices = levelWords.map((_, index) => index);
+      setGameOver(true);
+      return null;
     }
     
     const randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
@@ -73,13 +82,28 @@ const EnglishTranslationGame = () => {
       incrementScore();
       setShowConfetti(false);
       setTimeout(() => setShowConfetti(true), 0);
+      setUserAnswer("");
+      setTimeLeft(20);
+      const newQuestion = generateTranslationQuestion();
+      if (newQuestion) {
+        setCurrentQuestion(newQuestion);
+      }
     } else {
       decrementHearts();
+      setShowError(true);
     }
     
+    setTimeout(() => inputRef.current?.focus(), 0);
+  };
+
+  const handleContinueAfterError = () => {
+    setShowError(false);
     setUserAnswer("");
     setTimeLeft(20);
-    setCurrentQuestion(generateTranslationQuestion());
+    const newQuestion = generateTranslationQuestion();
+    if (newQuestion) {
+      setCurrentQuestion(newQuestion);
+    }
     setTimeout(() => inputRef.current?.focus(), 0);
   };
 
@@ -92,6 +116,7 @@ const EnglishTranslationGame = () => {
   const handleRestart = () => {
     resetGame();
     setUsedWordIndices([]);
+    setCurrentLevel(1);
     setCurrentQuestion(generateTranslationQuestion());
   };
 
@@ -163,6 +188,32 @@ const EnglishTranslationGame = () => {
           </Button>
         </CardFooter>
       </Card>
+
+      <Dialog open={showError} onOpenChange={setShowError}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl text-red-500">Incorrect Answer</DialogTitle>
+            <DialogDescription className="text-center pt-4">
+              <p className="text-lg mb-2">The correct translation for</p>
+              <p className="text-2xl font-bold text-purple-700 mb-2">
+                {gameState.currentQuestion?.content}
+              </p>
+              <p className="text-lg mb-2">is</p>
+              <p className="text-2xl font-bold text-purple-700 mb-4 direction-rtl">
+                {gameState.currentQuestion?.correctAnswer}
+              </p>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button 
+              onClick={handleContinueAfterError}
+              className="w-full bg-purple-600 hover:bg-purple-700"
+            >
+              Continue
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -10,7 +10,7 @@ export const ConfettiEffect = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShow(false);
-    }, 2500); // Increased duration
+    }, 4000); // Increased duration for slower fade
 
     return () => clearTimeout(timer);
   }, []);
@@ -25,8 +25,8 @@ export const ConfettiEffect = () => {
         height={window.innerHeight}
         numberOfPieces={isMobile ? 75 : 150}
         recycle={false}
-        gravity={0.3}
-        initialVelocityX={15}
+        gravity={0.5} // Increased gravity for faster initial splash
+        initialVelocityX={25} // Increased velocity for faster initial spread
         colors={['#D946EF', '#F97316', '#8B5CF6', '#E5DEFF', '#FFDEE2', '#FEC6A1']}
         confettiSource={{
           x: 0,
@@ -41,8 +41,8 @@ export const ConfettiEffect = () => {
         height={window.innerHeight}
         numberOfPieces={isMobile ? 75 : 150}
         recycle={false}
-        gravity={0.3}
-        initialVelocityX={-15}
+        gravity={0.5} // Increased gravity for faster initial splash
+        initialVelocityX={-25} // Increased negative velocity for faster initial spread
         colors={['#D946EF', '#F97316', '#8B5CF6', '#E5DEFF', '#FFDEE2', '#FEC6A1']}
         confettiSource={{
           x: window.innerWidth,
