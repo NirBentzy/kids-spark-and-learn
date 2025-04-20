@@ -58,7 +58,7 @@ const EnglishTranslationGame = () => {
     
     return {
       id: Date.now(),
-      type: 'english-word',
+      type: "english-word" as const,
       content: word.english,
       correctAnswer: word.hebrew,
     };
@@ -88,6 +88,12 @@ const EnglishTranslationGame = () => {
     setUsedWordIndices([]);
     setCurrentQuestion(generateTranslationQuestion());
   }, []);
+
+  const handleRestart = () => {
+    resetGame();
+    setUsedWordIndices([]);
+    setCurrentQuestion(generateTranslationQuestion());
+  };
 
   if (gameState.gameOver) {
     return <GameOver playerName={gameState.playerName} score={gameState.score} onRestart={handleRestart} />;
