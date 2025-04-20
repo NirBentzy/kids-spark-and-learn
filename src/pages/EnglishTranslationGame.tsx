@@ -91,6 +91,7 @@ const EnglishTranslationGame = () => {
     } else {
       decrementHearts();
       setShowError(true);
+      // We don't advance to the next question here - we'll do that when the user clicks "Continue"
     }
     
     setTimeout(() => inputRef.current?.focus(), 0);
