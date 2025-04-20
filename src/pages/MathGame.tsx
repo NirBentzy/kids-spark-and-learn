@@ -114,7 +114,7 @@ const MathGame = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-purple-50 p-4">
+    <div className="min-h-[80vh] flex items-center justify-center bg-purple-50 p-4">
       {showConfetti && <ConfettiEffect />}
       <Card className="w-full max-w-md shadow-lg border-purple-200">
         <CardHeader>

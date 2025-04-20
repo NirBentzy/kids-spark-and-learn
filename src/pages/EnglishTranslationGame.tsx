@@ -1,26 +1,14 @@
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, HeartOff } from "lucide-react";
-import GameTimer from "@/components/GameTimer";
-import { Question } from "@/types";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { useGameContext } from "@/contexts/GameContext";
-
-// English-Hebrew word pairs
-const translationItems = [
-  { english: "apple", hebrew: "תפוח" },
-  { english: "dog", hebrew: "כלב" },
-  { english: "cat", hebrew: "חתול" },
-  { english: "house", hebrew: "בית" },
-  { english: "book", hebrew: "ספר" },
-  { english: "table", hebrew: "שולחן" },
-  { english: "chair", hebrew: "כיסא" },
-  { english: "water", hebrew: "מים" },
-  { english: "bread", hebrew: "לחם" },
-  { english: "tree", hebrew: "עץ" },
-];
+import { translationWords } from "@/data/translationLevels";
+import { ConfettiEffect } from '@/components/ConfettiEffect';
+import GameHeader from "@/components/GameHeader";
+import GameOver from "@/components/GameOver";
 
 const EnglishTranslationGame = () => {
   const navigate = useNavigate();
@@ -28,41 +16,54 @@ const EnglishTranslationGame = () => {
     gameState, 
     incrementScore, 
     decrementHearts, 
-    resetGame, 
+    resetGame,
     setCurrentQuestion,
     setTimeLeft,
     setGameOver
   } = useGameContext();
+  
   const [userAnswer, setUserAnswer] = useState("");
   const [usedWordIndices, setUsedWordIndices] = useState<number[]>([]);
+  const [currentLevel, setCurrentLevel] = useState(1);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Generate a translation question that hasn't been used yet in this session
-  const generateTranslationQuestion = (): Question => {
-    // If all words have been used, reset the used words array
-    if (usedWordIndices.length >= translationItems.length) {
+  // Calculate current level based on score
+  useEffect(() => {
+    const newLevel = Math.floor(gameState.score / 10) + 1;
+    if (newLevel !== currentLevel && newLevel <= 3) {
+      setCurrentLevel(newLevel);
+    }
+  }, [gameState.score]);
+
+  const generateTranslationQuestion = () => {
+    const levelWords = translationWords.filter(word => word.level === currentLevel);
+    
+    if (usedWordIndices.length >= levelWords.length) {
       setUsedWordIndices([]);
     }
     
-    // Find an unused word
-    let randomIndex;
-    do {
-      randomIndex = Math.floor(Math.random() * translationItems.length);
-    } while (usedWordIndices.includes(randomIndex));
+    let availableIndices = levelWords.map((_, index) => index)
+      .filter(index => !usedWordIndices.includes(index));
     
-    // Add this index to used words
+    if (availableIndices.length === 0) {
+      setUsedWordIndices([]);
+      availableIndices = levelWords.map((_, index) => index);
+    }
+    
+    const randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
     setUsedWordIndices(prev => [...prev, randomIndex]);
     
-    const item = translationItems[randomIndex];
+    const word = levelWords[randomIndex];
     
     return {
       id: Date.now(),
       type: 'english-word',
-      content: item.english,
-      correctAnswer: item.hebrew,
+      content: word.english,
+      correctAnswer: word.hebrew,
     };
   };
 
-  // Check the answer
   const checkAnswer = () => {
     if (!gameState.currentQuestion) return;
     
@@ -70,89 +71,44 @@ const EnglishTranslationGame = () => {
     
     if (isCorrect) {
       incrementScore();
+      setShowConfetti(false);
+      setTimeout(() => setShowConfetti(true), 0);
     } else {
       decrementHearts();
     }
     
-    // Reset and generate new question
     setUserAnswer("");
     setTimeLeft(20);
     setCurrentQuestion(generateTranslationQuestion());
+    setTimeout(() => inputRef.current?.focus(), 0);
   };
 
-  // Initialize the game
   useEffect(() => {
     resetGame();
     setUsedWordIndices([]);
     setCurrentQuestion(generateTranslationQuestion());
   }, []);
 
-  // Game over screen
   if (gameState.gameOver) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-purple-50 p-4">
-        <Card className="w-full max-w-md shadow-lg border-purple-200">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold text-purple-700">
-              Game Over!
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-xl mb-4">Good job, {gameState.playerName}!</p>
-            <p className="text-3xl font-bold mb-6">Your Score: {gameState.score}</p>
-          </CardContent>
-          <CardFooter className="flex gap-4">
-            <Button 
-              onClick={() => {
-                resetGame();
-                setUsedWordIndices([]);
-                setCurrentQuestion(generateTranslationQuestion());
-              }}
-              className="flex-1 bg-purple-600 hover:bg-purple-700"
-            >
-              Play Again
-            </Button>
-            <Button 
-              variant="outline"
-              onClick={() => navigate("/english")}
-              className="flex-1 border-purple-300"
-            >
-              Choose Activity
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
-    );
+    return <GameOver playerName={gameState.playerName} score={gameState.score} onRestart={handleRestart} />;
   }
 
-  // Main game screen
   return (
-    <div className="min-h-screen flex items-center justify-center bg-purple-50 p-4">
+    <div className="min-h-[80vh] flex items-center justify-center bg-purple-50 p-4">
+      {showConfetti && <ConfettiEffect />}
       <Card className="w-full max-w-md shadow-lg border-purple-200">
         <CardHeader>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <div>
-                <p className="text-sm text-gray-500">Player: {gameState.playerName}</p>
-                <p className="text-lg font-bold">Score: {gameState.score}</p>
-              </div>
-              <div className="flex gap-1">
-                {Array.from({ length: gameState.hearts }).map((_, i) => (
-                  <Heart key={`heart-${i}`} className="text-red-500" size={24} />
-                ))}
-                {Array.from({ length: 3 - gameState.hearts }).map((_, i) => (
-                  <HeartOff key={`heart-off-${i}`} className="text-gray-300" size={24} />
-                ))}
-              </div>
-            </div>
-            {gameState.timerEnabled && (
-              <GameTimer
-                timeLeft={gameState.timeLeft}
-                maxTime={20}
-                isRunning={!gameState.gameOver}
-                onTimeUp={() => setGameOver(true)}
-              />
-            )}
+          <GameHeader 
+            playerName={gameState.playerName}
+            score={gameState.score}
+            hearts={gameState.hearts}
+            timeLeft={gameState.timeLeft}
+            timerEnabled={gameState.timerEnabled}
+            gameOver={gameState.gameOver}
+            onTimeUp={() => setGameOver(true)}
+          />
+          <div className="text-sm text-purple-600 mt-2">
+            Level {currentLevel}
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -167,6 +123,7 @@ const EnglishTranslationGame = () => {
               
               <div>
                 <Input
+                  ref={inputRef}
                   type="text"
                   value={userAnswer}
                   onChange={e => setUserAnswer(e.target.value)}
@@ -174,7 +131,7 @@ const EnglishTranslationGame = () => {
                   className="text-xl text-center p-6 border-purple-200"
                   autoFocus
                   onKeyDown={e => {
-                    if (e.key === 'Enter') {
+                    if (e.key === 'Enter' && userAnswer) {
                       checkAnswer();
                     }
                   }}
