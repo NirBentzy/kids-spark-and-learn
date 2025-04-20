@@ -28,6 +28,7 @@ const EnglishTranslationGame = () => {
   const [currentLevel, setCurrentLevel] = useState(1);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [nextQuestionReady, setNextQuestionReady] = useState<{ fn: () => void } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Calculate current level based on score
@@ -91,21 +92,29 @@ const EnglishTranslationGame = () => {
     } else {
       decrementHearts();
       setShowError(true);
-      // We don't advance to the next question here - we'll do that when the user clicks "Continue"
+      // Store the next question function to be executed only when the user clicks "Continue"
+      const prepareNextQuestion = () => {
+        setUserAnswer("");
+        setTimeLeft(20);
+        const newQuestion = generateTranslationQuestion();
+        if (newQuestion) {
+          setCurrentQuestion(newQuestion);
+        }
+        setShowError(false);
+        setTimeout(() => inputRef.current?.focus(), 0);
+      };
+      
+      setNextQuestionReady({ fn: prepareNextQuestion });
     }
     
     setTimeout(() => inputRef.current?.focus(), 0);
   };
 
   const handleContinueAfterError = () => {
-    setShowError(false);
-    setUserAnswer("");
-    setTimeLeft(20);
-    const newQuestion = generateTranslationQuestion();
-    if (newQuestion) {
-      setCurrentQuestion(newQuestion);
+    if (nextQuestionReady) {
+      nextQuestionReady.fn();
+      setNextQuestionReady(null);
     }
-    setTimeout(() => inputRef.current?.focus(), 0);
   };
 
   useEffect(() => {
@@ -190,8 +199,13 @@ const EnglishTranslationGame = () => {
         </CardFooter>
       </Card>
 
-      <Dialog open={showError} onOpenChange={setShowError}>
-        <DialogContent>
+      <Dialog open={showError} onOpenChange={(open) => {
+        // Only allow the dialog to be closed via the Continue button
+        if (!open && nextQuestionReady) {
+          handleContinueAfterError();
+        }
+      }}>
+        <DialogContent onPointerDownOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle className="text-center text-xl text-red-500">Incorrect Answer</DialogTitle>
             <DialogDescription className="text-center pt-4">
