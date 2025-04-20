@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -92,7 +91,6 @@ const EnglishTranslationGame = () => {
     } else {
       decrementHearts();
       setShowError(true);
-      // Store the next question function to be executed only when the user clicks "Continue"
       const prepareNextQuestion = () => {
         setUserAnswer("");
         setTimeLeft(20);
@@ -199,13 +197,20 @@ const EnglishTranslationGame = () => {
         </CardFooter>
       </Card>
 
-      <Dialog open={showError} onOpenChange={(open) => {
-        // Only allow the dialog to be closed via the Continue button
-        if (!open && nextQuestionReady) {
-          handleContinueAfterError();
-        }
-      }}>
-        <DialogContent onPointerDownOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
+      <Dialog 
+        open={showError} 
+        onOpenChange={(open) => {
+          // Prevent dialog from closing except through Continue button
+          if (!open && nextQuestionReady) {
+            handleContinueAfterError();
+          }
+        }}
+      >
+        <DialogContent 
+          onPointerDownOutside={(e) => e.preventDefault()} 
+          onEscapeKeyDown={(e) => e.preventDefault()}
+          className="sm:max-w-[425px]"
+        >
           <DialogHeader>
             <DialogTitle className="text-center text-xl text-red-500">Incorrect Answer</DialogTitle>
             <DialogDescription className="text-center pt-4">
@@ -214,7 +219,7 @@ const EnglishTranslationGame = () => {
                 {gameState.currentQuestion?.content}
               </p>
               <p className="text-lg mb-2">is</p>
-              <p className="text-2xl font-bold text-purple-700 mb-4 direction-rtl">
+              <p className="text-2xl font-bold text-purple-700 mb-4">
                 {gameState.currentQuestion?.correctAnswer}
               </p>
             </DialogDescription>
