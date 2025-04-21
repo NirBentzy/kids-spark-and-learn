@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -118,6 +117,7 @@ const EnglishLetterGame = () => {
         playerName={gameState.playerName}
         score={gameState.score}
         onRestart={initializeGame}
+        gameType="english-letters"
       />
     );
   }

@@ -2,6 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import LeaderboardButton from "@/components/LeaderboardButton";
 
 const SubjectSelection = () => {
   const navigate = useNavigate();
@@ -23,7 +24,10 @@ const SubjectSelection = () => {
                 <h2 className="text-xl font-semibold mb-2">Math</h2>
                 <p className="text-gray-600">Practice multiplication from 0×0 to 12×12</p>
               </div>
-              <span className="text-4xl">🔢</span>
+              <div className="flex items-center gap-2">
+                <LeaderboardButton game="math" />
+                <span className="text-4xl">🔢</span>
+              </div>
             </CardContent>
           </Card>
           

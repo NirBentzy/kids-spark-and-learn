@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -73,6 +72,7 @@ const EnglishVocabularyGame = () => {
         playerName={gameState.playerName}
         score={gameState.score}
         onRestart={handleRestart}
+        gameType="english-vocabulary"
       />
     );
   }

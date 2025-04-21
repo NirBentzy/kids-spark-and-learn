@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -28,7 +27,7 @@ const EnglishTranslationGame = () => {
   const [currentLevel, setCurrentLevel] = useState(1);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showError, setShowError] = useState(false);
-  const [nextQuestionReady, setNextQuestionReady] = useState<{ fn: () => void } | null>(null);
+  const [nextQuestionReady, setNextQuestionReady: any] = useState<{ fn: () => void } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Calculate current level based on score
@@ -131,7 +130,15 @@ const EnglishTranslationGame = () => {
   };
 
   if (gameState.gameOver) {
-    return <GameOver playerName={gameState.playerName} score={gameState.score} onRestart={handleRestart} />;
+    return (
+      <GameOver
+        playerName={gameState.playerName}
+        score={gameState.score}
+        onRestart={handleRestart}
+        gameType="english-translation"
+        level={currentLevel}
+      />
+    );
   }
 
   return (
