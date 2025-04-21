@@ -11,13 +11,19 @@ interface LeaderboardButtonProps {
 const LeaderboardButton = ({ game }: LeaderboardButtonProps) => {
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
 
+  const handleLeaderboardToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsLeaderboardOpen(true);
+  };
+
   return (
     <>
       <Button 
         variant="ghost" 
         size="icon" 
         className="rounded-full hover:bg-purple-100"
-        onClick={() => setIsLeaderboardOpen(true)}
+        onClick={handleLeaderboardToggle}
       >
         <Crown className="text-yellow-500" />
       </Button>

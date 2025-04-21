@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -25,16 +26,22 @@ const EnglishVocabularyGame = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const handleImageError = () => {
+    console.log("Image failed to load, generating a new question");
+    // If image fails to load, generate a new question
+    setCurrentQuestion(generateVocabularyQuestion());
+  };
+
   const checkAnswer = () => {
     if (!gameState.currentQuestion) return;
     
+    // Make the answer check case-insensitive
     const isCorrect = userAnswer.toLowerCase() === String(gameState.currentQuestion.correctAnswer).toLowerCase();
     
     if (isCorrect) {
       incrementScore();
       setShowConfetti(false);
       setTimeout(() => setShowConfetti(true), 0);
-      setTimeout(() => setShowConfetti(false), 2500);
       
       setUserAnswer("");
       setTimeLeft(20);
@@ -102,6 +109,7 @@ const EnglishVocabularyGame = () => {
                       src={gameState.currentQuestion.imageUrl}
                       alt="What's this?"
                       className="w-32 h-32 object-contain"
+                      onError={handleImageError}
                     />
                   ) : null}
                 </div>
