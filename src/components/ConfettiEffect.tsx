@@ -23,7 +23,7 @@ export const ConfettiEffect = () => {
       <Confetti
         width={window.innerWidth / 2}
         height={window.innerHeight}
-        numberOfPieces={isMobile ? 75 : 150}
+        numberOfPieces={isMobile ? 150 : 300} // Doubled the amount
         recycle={false}
         gravity={0.5} // Increased gravity for faster initial splash
         initialVelocityX={25} // Increased velocity for faster initial spread
@@ -39,7 +39,7 @@ export const ConfettiEffect = () => {
       <Confetti
         width={window.innerWidth / 2}
         height={window.innerHeight}
-        numberOfPieces={isMobile ? 75 : 150}
+        numberOfPieces={isMobile ? 150 : 300} // Doubled the amount
         recycle={false}
         gravity={0.5} // Increased gravity for faster initial splash
         initialVelocityX={-25} // Increased negative velocity for faster initial spread

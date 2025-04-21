@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -64,11 +65,19 @@ const EnglishLetterGame = () => {
     if (!gameState.currentQuestion) return;
     
     let isCorrect = false;
-
-    if (gameState.currentQuestion.content.toLowerCase() === 'h') {
-        isCorrect = userAnswer.toLowerCase() === 'i';
-    } else {
-        isCorrect = userAnswer.toLowerCase() === String(gameState.currentQuestion.correctAnswer).toLowerCase();
+    
+    // Special case for H -> I (letter after H is I)
+    if (gameState.currentQuestion.content.toLowerCase() === 'h' && 
+        gameState.currentQuestion.options?.[0] === "after") {
+      isCorrect = userAnswer.toLowerCase() === 'i';
+    } 
+    // Special case for H -> G (letter before H is G)
+    else if (gameState.currentQuestion.content.toLowerCase() === 'h' && 
+             gameState.currentQuestion.options?.[0] === "before") {
+      isCorrect = userAnswer.toLowerCase() === 'g';
+    }
+    else {
+      isCorrect = userAnswer.toLowerCase() === String(gameState.currentQuestion.correctAnswer).toLowerCase();
     }
     
     if (isCorrect) {

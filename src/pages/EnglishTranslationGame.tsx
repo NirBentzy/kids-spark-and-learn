@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -91,6 +92,7 @@ const EnglishTranslationGame = () => {
     } else {
       decrementHearts();
       setShowError(true);
+      
       const prepareNextQuestion = () => {
         setUserAnswer("");
         setTimeLeft(20);
@@ -200,9 +202,11 @@ const EnglishTranslationGame = () => {
       <Dialog 
         open={showError} 
         onOpenChange={(open) => {
-          // Prevent dialog from closing except through Continue button
-          if (!open && nextQuestionReady) {
-            handleContinueAfterError();
+          // This prevents the dialog from closing when clicking outside
+          // The dialog can only be closed by the Continue button
+          if (!open) {
+            // Prevent the default close action
+            return false;
           }
         }}
       >

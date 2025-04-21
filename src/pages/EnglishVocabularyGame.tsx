@@ -1,10 +1,11 @@
+
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { useGameContext } from "@/contexts/GameContext";
-import { generateVocabularyQuestion, getCurrentIcon } from "@/utils/vocabularyUtils";
+import { generateVocabularyQuestion } from "@/utils/vocabularyUtils";
 import GameOver from "@/components/GameOver";
 import GameHeader from "@/components/GameHeader";
 import { ConfettiEffect } from '@/components/ConfettiEffect';
@@ -96,7 +97,13 @@ const EnglishVocabularyGame = () => {
             <>
               <div className="text-center p-6">
                 <div className="flex justify-center mb-6">
-                  {getCurrentIcon(gameState.currentQuestion.content)}
+                  {gameState.currentQuestion.imageUrl ? (
+                    <img 
+                      src={gameState.currentQuestion.imageUrl}
+                      alt="What's this?"
+                      className="w-32 h-32 object-contain"
+                    />
+                  ) : null}
                 </div>
                 <p className="text-xl">Type the word in English</p>
                 {showCorrectAnswer && (
@@ -121,6 +128,9 @@ const EnglishVocabularyGame = () => {
                   onKeyDown={e => {
                     if (e.key === 'Enter' && !showCorrectAnswer && userAnswer) {
                       checkAnswer();
+                    }
+                    if (e.key === 'Enter' && showCorrectAnswer) {
+                      handleContinue();
                     }
                   }}
                 />
