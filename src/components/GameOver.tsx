@@ -17,8 +17,15 @@ const GameOver = ({ playerName, score, onRestart, gameType, level }: GameOverPro
   const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState("");
   const [savedToLeaderboard, setSavedToLeaderboard] = useState(false);
+  const [displayName, setDisplayName] = useState(playerName);
 
   useEffect(() => {
+    // Check localStorage for the player name to ensure consistency
+    const storedPlayerName = localStorage.getItem("playerName");
+    if (storedPlayerName && storedPlayerName.trim() !== "") {
+      setDisplayName(storedPlayerName);
+    }
+    
     // Format date as DD/MM/YY
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
@@ -27,11 +34,11 @@ const GameOver = ({ playerName, score, onRestart, gameType, level }: GameOverPro
     setCurrentDate(`${day}/${month}/${year}`);
     
     // Add score to leaderboard if it qualifies
-    if (doesScoreQualify(gameType, score) && playerName && score > 0) {
-      const wasAdded = addLeaderboardEntry(playerName, gameType, score, level);
+    if (doesScoreQualify(gameType, score) && score > 0) {
+      const wasAdded = addLeaderboardEntry(displayName, gameType, score, level);
       setSavedToLeaderboard(wasAdded);
     }
-  }, [playerName, score, gameType, level]);
+  }, [displayName, score, gameType, level]);
 
   // Determine which route to navigate back to
   const getBackRoute = () => {
@@ -48,7 +55,7 @@ const GameOver = ({ playerName, score, onRestart, gameType, level }: GameOverPro
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center">
-          <p className="text-xl mb-4">Good job, {playerName}!</p>
+          <p className="text-xl mb-4">Good job, {displayName}!</p>
           <p className="text-3xl font-bold mb-2">Your Score: {score}</p>
           <p className="text-sm text-gray-500 mb-6">{currentDate}</p>
           

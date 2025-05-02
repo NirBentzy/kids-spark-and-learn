@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -13,7 +13,14 @@ interface LeaderboardProps {
 }
 
 const Leaderboard = ({ game, isOpen, onClose }: LeaderboardProps) => {
-  const [leaderboard] = useState<LeaderboardEntry[]>(() => getLeaderboard(game));
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+
+  // Fetch leaderboard when game changes or dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      setLeaderboard(getLeaderboard(game));
+    }
+  }, [game, isOpen]);
   
   // Medal components for top 3 positions
   const positionBadges = [

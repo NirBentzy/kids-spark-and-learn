@@ -23,8 +23,28 @@ export const getLeaderboard = (game: Game): LeaderboardEntry[] => {
     if (!leaderboardData) return [];
     
     const allEntries: LeaderboardEntry[] = JSON.parse(leaderboardData);
-    return allEntries
-      .filter(entry => entry.game === game)
+    
+    // Filter by game, then get unique entries by name (keeping only the highest score)
+    const gameEntries = allEntries.filter(entry => entry.game === game);
+    
+    // Group by name and keep only the highest score for each name
+    const uniqueEntries: LeaderboardEntry[] = [];
+    const processedNames = new Set<string>();
+    
+    for (const entry of gameEntries) {
+      if (processedNames.has(entry.name)) continue;
+      
+      // Get all entries for this name
+      const nameEntries = gameEntries.filter(e => e.name === entry.name);
+      // Find the entry with the highest score
+      const highestEntry = nameEntries.reduce((prev, current) => 
+        (current.points > prev.points) ? current : prev, nameEntries[0]);
+      
+      uniqueEntries.push(highestEntry);
+      processedNames.add(entry.name);
+    }
+    
+    return uniqueEntries
       .sort((a, b) => b.points - a.points)
       .slice(0, 10);
   } catch (error) {
@@ -53,13 +73,19 @@ export const addLeaderboardEntry = (
   level?: number
 ): boolean => {
   try {
-    if (!name || name.trim() === '') return false;
+    // Always use the real player name from localStorage if available
+    const storedPlayerName = localStorage.getItem('playerName');
+    const playerName = storedPlayerName && storedPlayerName.trim() !== '' 
+      ? storedPlayerName 
+      : name.trim();
+    
+    if (!playerName || playerName === '') return false;
     
     const currentDate = new Date();
     const formattedDate = formatDate(currentDate);
     
     const newEntry: LeaderboardEntry = {
-      name: name.trim(),
+      name: playerName,
       game,
       points,
       level,
@@ -72,29 +98,9 @@ export const addLeaderboardEntry = (
     // Add the new entry
     allEntries.push(newEntry);
     
-    // Sort and limit to top entries per game
-    const gameEntries = allEntries.filter(entry => entry.game === game);
-    
-    if (gameEntries.length > 10) {
-      // Sort by points (highest first)
-      const sortedGameEntries = gameEntries.sort((a, b) => b.points - a.points);
-      
-      // If new entry doesn't make the top 10, exit early
-      const isTopTen = sortedGameEntries.slice(0, 10).some(entry => 
-        entry.name === newEntry.name && entry.points === newEntry.points && entry.date === newEntry.date
-      );
-      
-      if (!isTopTen) return false;
-      
-      // Keep only the top 10 for this game
-      const topTenForGame = sortedGameEntries.slice(0, 10);
-      
-      // Replace all entries for this game with just the top 10
-      allEntries = allEntries.filter(entry => entry.game !== game).concat(topTenForGame);
-    }
-    
-    // Save back to localStorage
+    // Save back to localStorage to ensure persistence
     localStorage.setItem('gameLeaderboard', JSON.stringify(allEntries));
+    
     return true;
   } catch (error) {
     console.error("Error adding leaderboard entry:", error);
